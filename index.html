@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Fantasy Name Generator</title>
+  <style>
+    :root {
+      --bg: #0f172a;
+      --panel: rgba(15, 23, 42, 0.78);
+      --panel-border: rgba(255, 255, 255, 0.12);
+      --text: #e5e7eb;
+      --muted: #94a3b8;
+      --accent: #a78bfa;
+      --accent-2: #22d3ee;
+      --good: #34d399;
+      --shadow: 0 24px 60px rgba(0, 0, 0, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(circle at top left, rgba(167, 139, 250, 0.25), transparent 28%),
+        radial-gradient(circle at top right, rgba(34, 211, 238, 0.18), transparent 24%),
+        linear-gradient(180deg, #020617 0%, #0f172a 100%);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .card {
+      width: min(760px, 100%);
+      background: var(--panel);
+      backdrop-filter: blur(14px);
+      border: 1px solid var(--panel-border);
+      border-radius: 24px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .hero {
+      padding: 32px 32px 20px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .eyebrow {
+      display: inline-block;
+      font-size: 12px;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent-2);
+      margin-bottom: 10px;
+      font-weight: 700;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3rem);
+      line-height: 1.05;
+    }
+
+    .subtitle {
+      margin: 14px 0 0;
+      color: var(--muted);
+      font-size: 1rem;
+      line-height: 1.6;
+      max-width: 60ch;
+    }
+
+    .content {
+      display: grid;
+      gap: 24px;
+      padding: 28px 32px 32px;
+    }
+
+    .generator {
+      display: grid;
+      gap: 18px;
+      justify-items: center;
+      text-align: center;
+    }
+
+    .name-box {
+      width: 100%;
+      min-height: 160px;
+      display: grid;
+      place-items: center;
+      border-radius: 22px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: linear-gradient(180deg, rgba(255,255,255,0.05), rgba(255,255,255,0.02));
+      padding: 24px;
+    }
+
+    #nameDisplay {
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: 0.02em;
+      margin: 0;
+    }
+
+    .hint {
+      color: var(--muted);
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      justify-content: center;
+    }
+
+    button {
+      appearance: none;
+      border: 0;
+      border-radius: 999px;
+      padding: 14px 20px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.16s ease, opacity 0.16s ease, box-shadow 0.16s ease;
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+    }
+
+    button:active {
+      transform: translateY(0);
+    }
+
+    .primary {
+      color: white;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 10px 30px rgba(34, 211, 238, 0.2);
+    }
+
+    .secondary {
+      color: var(--text);
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .copied {
+      color: var(--good);
+      min-height: 1.25rem;
+      margin: 0;
+      font-weight: 600;
+    }
+
+    .list-panel {
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 8px;
+    }
+
+    .list-panel h2 {
+      margin: 0 0 10px;
+      font-size: 1.1rem;
+    }
+
+    .list-panel p {
+      margin: 0 0 14px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    .name-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px;
+      padding: 0;
+      margin: 0;
+      list-style: none;
+    }
+
+    .name-list li {
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      color: #dbeafe;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    footer {
+      padding: 0 32px 28px;
+      color: var(--muted);
+      font-size: 0.9rem;
+    }
+
+    code {
+      color: #bfdbfe;
+      background: rgba(255, 255, 255, 0.06);
+      padding: 2px 6px;
+      border-radius: 8px;
+    }
+
+    @media (max-width: 640px) {
+      .hero,
+      .content,
+      footer {
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .name-box {
+        min-height: 140px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="card">
+    <section class="hero">
+      <div class="eyebrow">GitHub Pages Ready</div>
+      <h1>Fantasy Name Generator</h1>
+      <p class="subtitle">
+        A simple static HTML page that picks a random fantasy name from an embedded list.
+        You can upload this as <code>index.html</code> to a GitHub Pages repository and it will work instantly.
+      </p>
+    </section>
+
+    <section class="content">
+      <div class="generator">
+        <div class="name-box">
+          <h2 id="nameDisplay">Aelrion</h2>
+        </div>
+
+        <p class="hint">Click the button to summon a new name.</p>
+
+        <div class="actions">
+          <button class="primary" id="generateBtn">Generate Name</button>
+          <button class="secondary" id="copyBtn">Copy Name</button>
+        </div>
+
+        <p class="copied" id="copyStatus"></p>
+      </div>
+
+      <div class="list-panel">
+        <h2>Embedded sample names</h2>
+        <p>
+          These are included directly in the page for now. Later, you can replace them with your own list.
+        </p>
+        <ul class="name-list" id="nameList"></ul>
+      </div>
+    </section>
+
+    <footer>
+      To publish: create a GitHub repository, add this file as <code>index.html</code>, then enable GitHub Pages in the repository settings.
+    </footer>
+  </main>
+
+  <script>
+    const fantasyNames = [
+      "Aelrion",
+      "Vaelith",
+      "Thandor",
+      "Elaria",
+      "Morvyn",
+      "Sylvara",
+      "Dravenor",
+      "Kaelith",
+      "Nymeris",
+      "Zorath",
+      "Ilyndra",
+      "Fenric",
+      "Liora",
+      "Torrak",
+      "Velmira",
+      "Orenth",
+      "Selvaris",
+      "Mydrin",
+      "Azranel",
+      "Calithor",
+      "Rynessa",
+      "Varkon",
+      "Eryndor",
+      "Talindra",
+      "Draemor",
+      "Isoldea",
+      "Korvath",
+      "Lythera",
+      "Nythar",
+      "Zephira"
+    ];
+
+    const nameDisplay = document.getElementById("nameDisplay");
+    const generateBtn = document.getElementById("generateBtn");
+    const copyBtn = document.getElementById("copyBtn");
+    const copyStatus = document.getElementById("copyStatus");
+    const nameList = document.getElementById("nameList");
+
+    function getRandomName() {
+      const randomIndex = Math.floor(Math.random() * fantasyNames.length);
+      return fantasyNames[randomIndex];
+    }
+
+    function showRandomName() {
+      const nextName = getRandomName();
+      nameDisplay.textContent = nextName;
+      copyStatus.textContent = "";
+    }
+
+    async function copyCurrentName() {
+      try {
+        await navigator.clipboard.writeText(nameDisplay.textContent);
+        copyStatus.textContent = `Copied: ${nameDisplay.textContent}`;
+      } catch {
+        copyStatus.textContent = "Copy failed. Your browser may block clipboard access.";
+      }
+    }
+
+    function renderNameList() {
+      fantasyNames.forEach((name) => {
+        const li = document.createElement("li");
+        li.textContent = name;
+        nameList.appendChild(li);
+      });
+    }
+
+    generateBtn.addEventListener("click", showRandomName);
+    copyBtn.addEventListener("click", copyCurrentName);
+
+    renderNameList();
+  </script>
+</body>
+</html>
